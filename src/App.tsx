@@ -1,17 +1,30 @@
 import React from 'react';
-import { ItemForm } from './features/items/components/ItemForm';
-import { ItemList } from './features/items/components/ItemList';
-import { LoginForm } from './features/auth/components/LoginForm';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
 
-const App: React.FC = () => {
+function App() {
+  const isLoggedIn = !!localStorage.getItem('access_token'); // simple check
+
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Items</h1>
-      <ItemForm onAdd={() => window.location.reload()} />
-      <ItemList />
-      <LoginForm />
-    </div>
+    <Router>
+      <Routes>
+        {/* If user is not logged in, redirect to /login */}
+        <Route
+          path="/"
+          element={isLoggedIn ? <HomePage /> : <Navigate to="/login" replace />}
+        />
+        
+        <Route
+          path="/login"
+          element={!isLoggedIn ? <LoginPage /> : <Navigate to="/" replace />}
+        />
+
+        {/* Optional: Catch-all redirect to home or login */}
+        <Route path="*" element={<Navigate to={isLoggedIn ? "/" : "/login"} replace />} />
+      </Routes>
+    </Router>
   );
-};
+}
 
 export default App;
